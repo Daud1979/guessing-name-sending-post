@@ -1,5 +1,5 @@
 //Generate a random number between 1 and 500
-let randomNumber = parseInt(Math.random() * 10 + 1);
+let randomNumber = parseInt(Math.random() * 100 + 1);
 const submit = document.querySelector("#subt");
 const userInput = document.querySelector("#guessField");
 const guessSlot = document.querySelector(".guesses");
@@ -77,7 +77,7 @@ async function sendScoreToServer() {
   // TODO: Establecer adecuadamente el valor de las propiedades elapsed_time y attempts
   const score = {
     machine: "Daud",
-    elapsed_time: parseFloat  (tiempo),
+    elapsed_time: Math.trunc(tiempo/1000),
     attempts: totalfalta,
   };
   
@@ -90,7 +90,7 @@ async function sendScoreToServer() {
   });  
   
   let result = await response.text();
-  console.log(result)
+
   // TODO: CODE ME!! Haz el POST con la función fetch.
   console.log("Enviando los datos al servidor de King.com"); //POST
   // Enviamos los datos al endpoint
