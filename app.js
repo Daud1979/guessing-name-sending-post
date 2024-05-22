@@ -1,11 +1,13 @@
 //Generate a random number between 1 and 500
-let randomNumber = parseInt(Math.random() * 100 + 1);
+let randomNumber = parseInt(Math.random() * 10 + 1);
 const submit = document.querySelector("#subt");
 const userInput = document.querySelector("#guessField");
 const guessSlot = document.querySelector(".guesses");
 const remaining = document.querySelector(".lastResult");
 const startOver = document.querySelector(".resultParas");
 const lowOrHi = document.querySelector(".lowOrHi");
+const remainintime = document.querySelector('#remaining-time');
+const fila = document.querySelector("#filas");
 const p = document.createElement("p");
 let previousGuesses = [];
 let numGuesses = 1;
@@ -40,6 +42,7 @@ if (playGame) {
   subt.addEventListener("click", function (e) {
     e.preventDefault();
     //Grab guess from user
+   
     const guess = parseInt(userInput.value);
     validateGuess(guess);
   });
@@ -73,18 +76,50 @@ function validateGuess(guess) {
 async function sendScoreToServer() {
   // TODO: Establecer adecuadamente el valor de las propiedades elapsed_time y attempts
   const score = {
-    machine: "",
-    elapsed_time: 0,
-    attempts: 0,
+    machine: "Daud",
+    elapsed_time: parseFloat  (tiempo),
+    attempts: totalfalta,
   };
+  
+    let response = await fetch('https://guessing-name-score-api.onrender.com/add-score', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify(score) // información que te envio en foramto JSON. A este concepto también se le llama payload
+  });  
+  
+  let result = await response.text();
+  console.log(result)
   // TODO: CODE ME!! Haz el POST con la función fetch.
   console.log("Enviando los datos al servidor de King.com"); //POST
   // Enviamos los datos al endpoint
+  const lista = await fetch('https://guessing-name-score-api.onrender.com/get-scores');
+    const data = await lista.json();
+    console.log(data);
+    fila.innerHTML='';
+        for(let item of data){
+            fila.innerHTML+= `
+            <tr>
+            <td>${item.attempts}</td>
+            <td>${item.machine}</td>
+            <td>${item.elapsed_time}</td>
+            </tr>
+            `
+        }
 }
-
+let tiempo=0
+let totalfalta=0
 function checkGuess(guess) {
   //Display clue if guess is too high or too low
   if (guess === randomNumber) {
+   
+    /******************* */
+    clearInterval(timer);
+    tiempo=remainintime.innerHTML;
+   
+    totalfalta=10 - parseInt(remaining.innerHTML);   
+   
     displayMessage(
       `You guessed correctly! You can check all the scores at <a href="https://03i74i.csb.app/">https://03i74i.csb.app/</a> (provided that the developer did the work!!)`
     );
@@ -124,7 +159,7 @@ function endGame() {
 
 function newGame() {
   const newGameButton = document.querySelector("#newGame");
-  newGameButton.addEventListener("click", function () {
+  newGameButton.addEventListener("click",function () {
     //Pick a new random number
     randomNumber = parseInt(Math.random() * 100 + 1);
     previousGuesses = [];
@@ -140,6 +175,8 @@ function newGame() {
     // volver a lanzar el setInterval
     remainingSeconds = 60;
     timer = setInterval(updateRemainingTime, 1000);
+    
+
   });
 }
 //Allow to restart game with restart button
